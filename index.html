@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Нина Динева | Светлина вкъщи</title>
+<meta name="description" content="Интерактивен мозаечен портрет на Нина Динева — докосни стъклото и остави частиците да литнат.">
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="Нина Динева — Светлина вкъщи">
+<meta property="og:description" content="Интерактивен мозаечен портрет. Докосни стъклото — частиците литват.">
+<meta property="og:image" content="nina-dineva-mosaic.jpg">
+<meta property="og:url" content="https://REPLACE-WITH-YOUR-USERNAME.github.io/REPLACE-WITH-REPO/">
+<meta property="og:locale" content="bg_BG">
+<meta name="twitter:card" content="summary_large_image">
+
+<style>
+  :root{
+    --ink:#f4efe8;
+    --ink-dim:#b9b2a8;
+    --bg:#0b0a0d;
+    --bg-raise:#141217;
+    --mauve:#c397ac;
+    --mauve-deep:#8a5f77;
+    --gold:#c9a15a;
+    --jade:#4a5c52;
+    --line: rgba(244,239,232,0.14);
+    --radius: 2px;
+    --serif: "Fraunces", "Iowan Old Style", Georgia, serif;
+    --sans: "Work Sans", "Segoe UI", sans-serif;
+  }
+  [data-theme="light"]{
+    --ink:#1c1a1d;
+    --ink-dim:#5c564f;
+    --bg:#efe9df;
+    --bg-raise:#f8f4ec;
+    --line: rgba(28,26,29,0.14);
+  }
+
+  @font-face{ /* system fallback stack only, no external font fetch required */ }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:var(--sans);
+    min-height:100vh;
+    transition:background .5s ease, color .5s ease;
+    overflow-x:hidden;
+  }
+
+  .frame{
+    max-width:1040px;
+    margin:0 auto;
+    padding: 20px 20px 60px;
+  }
+
+  header.top{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding: 6px 0 28px;
+    border-bottom:1px solid var(--line);
+    margin-bottom: 34px;
+  }
+  .mark{
+    font-family:var(--serif);
+    font-weight:600;
+    font-style:italic;
+    font-size:15px;
+    letter-spacing:.02em;
+    color:var(--ink-dim);
+  }
+  .controls{
+    display:flex;
+    gap:10px;
+  }
+  .ctrl-btn{
+    font-family:var(--sans);
+    font-size:11px;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    background:transparent;
+    color:var(--ink-dim);
+    border:1px solid var(--line);
+    padding:8px 13px;
+    cursor:pointer;
+    border-radius:var(--radius);
+    transition:.25s ease;
+  }
+  .ctrl-btn:hover, .ctrl-btn:focus-visible{
+    color:var(--ink);
+    border-color:var(--mauve);
+    outline:none;
+  }
+  .ctrl-btn[aria-pressed="true"]{
+    color:var(--bg);
+    background:var(--mauve);
+    border-color:var(--mauve);
+  }
+
+  .eyebrow{
+    font-size:11px;
+    letter-spacing:.22em;
+    text-transform:uppercase;
+    color:var(--gold);
+    margin:0 0 10px;
+  }
+  h1{
+    font-family:var(--serif);
+    font-weight:600;
+    font-size:clamp(34px,6vw,58px);
+    line-height:1.02;
+    margin:0 0 14px;
+    letter-spacing:-0.01em;
+  }
+  h1 em{
+    font-style:italic;
+    color:var(--mauve);
+  }
+  .lede{
+    max-width:520px;
+    color:var(--ink-dim);
+    font-size:15px;
+    line-height:1.65;
+    margin:0 0 36px;
+  }
+
+  .stage-wrap{
+    position:relative;
+  }
+  .stage{
+    position:relative;
+    width:100%;
+    aspect-ratio: 1400 / 939;
+    max-width:900px;
+    margin:0 auto;
+    background:var(--bg-raise);
+    border-radius:var(--radius);
+    overflow:hidden;
+    box-shadow: 0 40px 90px -40px rgba(0,0,0,.6);
+    border:1px solid var(--line);
+    cursor: crosshair;
+    touch-action: none;
+  }
+  .stage canvas{
+    display:block;
+    width:100%;
+    height:100%;
+  }
+  .stage-hint{
+    position:absolute;
+    left:50%;
+    bottom:18px;
+    transform:translateX(-50%);
+    font-size:10.5px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:#fff;
+    background:rgba(10,9,11,.45);
+    backdrop-filter: blur(6px);
+    padding:9px 16px;
+    border-radius:20px;
+    border:1px solid rgba(255,255,255,.18);
+    pointer-events:none;
+    opacity:1;
+    transition:opacity .6s ease;
+  }
+  .stage-hint.hidden{opacity:0;}
+
+  .plate{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    gap:20px;
+    max-width:900px;
+    margin: 22px auto 0;
+    padding-top:18px;
+    border-top:1px solid var(--line);
+  }
+  .plate .name{
+    font-family:var(--serif);
+    font-size:19px;
+    font-weight:600;
+    margin:0 0 4px;
+  }
+  .plate .role{
+    font-size:11.5px;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:var(--ink-dim);
+    margin:0;
+  }
+  .plate .num{
+    font-family:var(--serif);
+    font-style:italic;
+    font-size:12px;
+    color:var(--ink-dim);
+    text-align:right;
+  }
+
+  .sound-toggle{
+    position:absolute;
+    top:14px;
+    right:14px;
+    z-index:5;
+    width:38px;
+    height:38px;
+    border-radius:50%;
+    border:1px solid rgba(255,255,255,.25);
+    background:rgba(10,9,11,.45);
+    backdrop-filter: blur(6px);
+    color:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+  }
+  .sound-toggle svg{width:16px;height:16px;}
+
+  footer{
+    max-width:900px;
+    margin:50px auto 0;
+    text-align:center;
+    font-size:11px;
+    letter-spacing:.06em;
+    color:var(--ink-dim);
+  }
+
+  [data-lang="en"] .bg{display:none;}
+  [data-lang="bg"] .en{display:none;}
+
+  @media (prefers-reduced-motion: reduce){
+    .stage{cursor:default;}
+  }
+</style>
+</head>
+<body data-theme="dark" data-lang="bg">
+
+<div class="frame">
+
+  <header class="top">
+    <div class="mark">N · DINEVA</div>
+    <div class="controls">
+      <button class="ctrl-btn" id="langBtn" type="button" aria-pressed="false">EN</button>
+      <button class="ctrl-btn" id="themeBtn" type="button" aria-pressed="false">
+        <span class="bg">Светло</span><span class="en">Light</span>
+      </button>
+    </div>
+  </header>
+
+  <p class="eyebrow"><span class="bg">Интерактивен портрет</span><span class="en">Interactive Portrait</span></p>
+  <h1><span class="bg">Светлина <em>вкъщи</em></span><span class="en">Light at <em>Home</em></span></h1>
+  <p class="lede">
+    <span class="bg">Топъл момент, разчупен на стъклени фасети. Прекарай пръст или мишка по повърхността — късчетата се повдигат, улавят светлината и звънват, преди да легнат обратно на място.</span>
+    <span class="en">A warm moment, broken into glass facets. Run a finger or the cursor across the surface — the shards lift, catch the light, and chime softly before settling back into place.</span>
+  </p>
+
+  <div class="stage-wrap">
+    <div class="stage" id="stage">
+      <canvas id="mosaic" aria-label="Interactive mosaic portrait of Nina Dineva"></canvas>
+      <button class="sound-toggle" id="soundBtn" type="button" aria-pressed="true" title="Sound">
+        <svg id="soundIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+          <path d="M4 9v6h4l5 4V5L8 9H4z"/>
+          <path d="M16.5 8.5a5 5 0 010 7" />
+          <path d="M19 6a9 9 0 010 12" />
+        </svg>
+      </button>
+      <div class="stage-hint" id="hint">
+        <span class="bg">докосни стъклото</span><span class="en">touch the glass</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="plate">
+    <div>
+      <p class="name">Nina Dineva</p>
+      <p class="role"><span class="bg">Портрет</span><span class="en">Portrait</span></p>
+    </div>
+    <div class="num">№ 001</div>
+  </div>
+
+  <footer>
+    <span class="bg">Дизайн и код — студио за дигитални портрети · Димитровград</span>
+    <span class="en">Design &amp; build — digital portrait studio · Dimitrovgrad</span>
+  </footer>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------- language / theme ---------- */
+  var langBtn = document.getElementById('langBtn');
+  var themeBtn = document.getElementById('themeBtn');
+  var body = document.body;
+
+  function applyLang(l){
+    body.setAttribute('data-lang', l);
+    langBtn.textContent = l === 'bg' ? 'EN' : 'BG';
+    langBtn.setAttribute('aria-pressed', l === 'en');
+    try{ localStorage.setItem('mi_lang', l); }catch(e){}
+  }
+  function applyTheme(t){
+    body.setAttribute('data-theme', t);
+    themeBtn.setAttribute('aria-pressed', t === 'light');
+    try{ localStorage.setItem('mi_theme', t); }catch(e){}
+  }
+  var savedLang, savedTheme;
+  try{
+    savedLang = localStorage.getItem('mi_lang');
+    savedTheme = localStorage.getItem('mi_theme');
+  }catch(e){}
+  applyLang(savedLang === 'en' ? 'en' : 'bg');
+  applyTheme(savedTheme === 'light' ? 'light' : 'dark');
+
+  langBtn.addEventListener('click', function(){
+    applyLang(body.getAttribute('data-lang') === 'bg' ? 'en' : 'bg');
+  });
+  themeBtn.addEventListener('click', function(){
+    applyTheme(body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+  });
+
+  /* ---------- audio ---------- */
+  var AudioCtx = window.AudioContext || window.webkitAudioContext;
+  var actx = null;
+  var soundOn = true;
+  var soundBtn = document.getElementById('soundBtn');
+  var soundIcon = document.getElementById('soundIcon');
+
+  function ensureAudio(){
+    if(!actx && AudioCtx){
+      actx = new AudioCtx();
+    }
+    if(actx && actx.state === 'suspended'){
+      actx.resume();
+    }
+  }
+
+  var scale = [523.25,587.33,659.25,698.46,783.99,880.00,987.77,1046.50]; // C pentatonic-ish, C5..C6
+  var lastNoteTime = 0;
+
+  function chime(freq, pan, vel){
+    if(!soundOn || !actx) return;
+    var now = actx.currentTime;
+    if(now - lastNoteTime < 0.028) return; // throttle density
+    lastNoteTime = now;
+
+    var osc = actx.createOscillator();
+    var osc2 = actx.createOscillator();
+    var gain = actx.createGain();
+    var filt = actx.createBiquadFilter();
+    var panner;
+    try{ panner = actx.createStereoPanner(); panner.pan.value = Math.max(-1,Math.min(1,pan)); }catch(e){ panner = null; }
+
+    osc.type = 'sine';
+    osc2.type = 'triangle';
+    osc.frequency.value = freq;
+    osc2.frequency.value = freq * 2.01;
+
+    filt.type = 'lowpass';
+    filt.frequency.value = 4200;
+
+    var peak = 0.05 * vel;
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.linearRampToValueAtTime(peak, now + 0.008);
+    gain.gain.exponentialRampToValueAtTime(0.0008, now + 0.55);
+
+    osc.connect(filt);
+    osc2.connect(filt);
+    filt.connect(gain);
+    if(panner){ gain.connect(panner); panner.connect(actx.destination); }
+    else { gain.connect(actx.destination); }
+
+    osc.start(now); osc2.start(now);
+    osc.stop(now + 0.6); osc2.stop(now + 0.6);
+  }
+
+  function setSoundIcon(on){
+    soundIcon.innerHTML = on
+      ? '<path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 010 7" /><path d="M19 6a9 9 0 010 12" />'
+      : '<path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16 9l5 6M21 9l-5 6"/>';
+  }
+  soundBtn.addEventListener('click', function(){
+    soundOn = !soundOn;
+    soundBtn.setAttribute('aria-pressed', soundOn);
+    setSoundIcon(soundOn);
+    if(soundOn) ensureAudio();
+  });
+
+  /* ---------- mosaic canvas ---------- */
+  var stage = document.getElementById('stage');
+  var canvas = document.getElementById('mosaic');
+  var ctx = canvas.getContext('2d');
+  var hint = document.getElementById('hint');
+
+  var img = new Image();
+  img.src = 'nina-dineva-mosaic.jpg';
+
+  var COLS = 18, ROWS = 12;
+  var triangles = [];
+  var dpr = Math.min(window.devicePixelRatio || 1, 2);
+  var cw = 0, ch = 0;
+
+  var pointer = { x:-9999, y:-9999, active:false };
+  var RADIUS = 130;      // influence radius in CSS px, scaled to canvas
+  var MAX_LIFT = 16;      // px shard travel at full elevation
+  var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function buildMesh(){
+    triangles = [];
+    var cellW = cw / COLS;
+    var cellH = ch / ROWS;
+    for(var j=0;j<ROWS;j++){
+      for(var i=0;i<COLS;i++){
+        var x0=i*cellW, y0=j*cellH, x1=x0+cellW, y1=y0+cellH;
+        // alternate diagonal direction per cell for a less uniform mesh
+        var flip = (i+j) % 2 === 0;
+        var trisForCell = flip
+          ? [ [[x0,y0],[x1,y0],[x0,y1]], [[x1,y0],[x1,y1],[x0,y1]] ]
+          : [ [[x0,y0],[x1,y0],[x1,y1]], [[x0,y0],[x1,y1],[x0,y1]] ];
+
+        for(var t=0;t<trisForCell.length;t++){
+          var v = trisForCell[t];
+          var cx = (v[0][0]+v[1][0]+v[2][0])/3;
+          var cy = (v[0][1]+v[1][1]+v[2][1])/3;
+          var ang = Math.atan2(cy - ch/2, cx - cw/2) + (Math.random()-0.5)*0.6;
+          triangles.push({
+            v:v, cx:cx, cy:cy,
+            dirX: Math.cos(ang), dirY: Math.sin(ang),
+            elev: 0, target: 0,
+            col: i, row: j,
+            armed: false
+          });
+        }
+      }
+    }
+  }
+
+  function resize(){
+    var rect = stage.getBoundingClientRect();
+    cw = rect.width; ch = rect.height;
+    canvas.width = Math.round(cw * dpr);
+    canvas.height = Math.round(ch * dpr);
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    buildMesh();
+  }
+
+  window.addEventListener('resize', resize);
+
+  function pointFromEvent(e){
+    var rect = stage.getBoundingClientRect();
+    var cx, cy;
+    if(e.touches && e.touches.length){
+      cx = e.touches[0].clientX; cy = e.touches[0].clientY;
+    } else {
+      cx = e.clientX; cy = e.clientY;
+    }
+    return { x: cx - rect.left, y: cy - rect.top };
+  }
+
+  function onMove(e){
+    var p = pointFromEvent(e);
+    pointer.x = p.x; pointer.y = p.y; pointer.active = true;
+    hint.classList.add('hidden');
+    ensureAudio();
+  }
+  function onLeave(){
+    pointer.active = false;
+  }
+
+  stage.addEventListener('mousemove', onMove, {passive:true});
+  stage.addEventListener('mouseleave', onLeave, {passive:true});
+  stage.addEventListener('touchstart', function(e){ onMove(e); }, {passive:true});
+  stage.addEventListener('touchmove', function(e){ onMove(e); }, {passive:true});
+  stage.addEventListener('touchend', onLeave, {passive:true});
+  stage.addEventListener('mousedown', ensureAudio);
+
+  function frame(){
+    if(cw && ch && img.complete){
+      var r2 = RADIUS * RADIUS;
+
+      ctx.clearRect(0,0,cw,ch);
+
+      for(var k=0;k<triangles.length;k++){
+        var tr = triangles[k];
+
+        if(pointer.active){
+          var dx = tr.cx - pointer.x, dy = tr.cy - pointer.y;
+          var d2 = dx*dx + dy*dy;
+          var t = Math.exp(-d2 / (2*r2*0.28));
+          tr.target = t;
+        } else {
+          tr.target = 0;
+        }
+
+        var prevElev = tr.elev;
+        tr.elev += (tr.target - tr.elev) * 0.18;
+        if(tr.elev < 0.001) tr.elev = 0;
+
+        if(!tr.armed && tr.elev > 0.45 && prevElev <= 0.45){
+          tr.armed = true;
+          if(!reduceMotion){
+            var noteIdx = Math.abs(tr.col) % scale.length;
+            var pan = (tr.cx / cw) * 2 - 1;
+            chime(scale[noteIdx], pan, 0.5 + Math.random()*0.5);
+          }
+        } else if(tr.elev < 0.15){
+          tr.armed = false;
+        }
+
+        var off = tr.elev * MAX_LIFT;
+        var ox = tr.dirX * off;
+        var oy = tr.dirY * off - off*0.35; // slight upward bias
+        var scaleAmt = 1 + tr.elev * 0.1;
+
+        ctx.save();
+        ctx.translate(tr.cx + ox, tr.cy + oy);
+        ctx.scale(scaleAmt, scaleAmt);
+        ctx.translate(-tr.cx - ox, -tr.cy - oy);
+
+        ctx.beginPath();
+        ctx.moveTo(tr.v[0][0]+ox, tr.v[0][1]+oy);
+        ctx.lineTo(tr.v[1][0]+ox, tr.v[1][1]+oy);
+        ctx.lineTo(tr.v[2][0]+ox, tr.v[2][1]+oy);
+        ctx.closePath();
+
+        if(tr.elev > 0.04){
+          ctx.save();
+          ctx.shadowColor = 'rgba(0,0,0,' + (0.5*tr.elev) + ')';
+          ctx.shadowBlur = 14 * tr.elev;
+          ctx.shadowOffsetY = 6 * tr.elev;
+          ctx.save();
+          ctx.clip();
+          ctx.drawImage(img, 0, 0, cw, ch);
+          ctx.restore();
+          ctx.shadowColor = 'transparent';
+          ctx.strokeStyle = 'rgba(255,255,255,' + (0.4*tr.elev) + ')';
+          ctx.lineWidth = 1;
+          ctx.stroke();
+          ctx.restore();
+        } else {
+          ctx.save();
+          ctx.clip();
+          ctx.drawImage(img, 0, 0, cw, ch);
+          ctx.restore();
+        }
+
+        ctx.restore();
+      }
+    }
+    requestAnimationFrame(frame);
+  }
+
+  if(img.complete){ resize(); } else { img.onload = resize; }
+  resize();
+  requestAnimationFrame(frame);
+
+})();
+</script>
+</body>
+</html>
